@@ -13,6 +13,29 @@
     prism:ViewModelLocator.AutoWireViewModel="True"
     mc:Ignorable="d">
     <Grid>
-        <ContentControl prism:RegionManager.RegionName="ContentRegion" />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border
+            Grid.Column="0"
+            Background="{StaticResource MiddleBackgroundBrush}"
+            BorderBrush="DarkGray"
+            BorderThickness="0,0,1,0">
+            <ListBox BorderThickness="0" ItemsSource="{Binding Tools}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type viewModels:IToolViewModel}">
+                        <TextBlock
+                            Padding="10,5"
+                            FontSize="{StaticResource CommonFontSize}"
+                            Foreground="{StaticResource CommonForegroundBrush}"
+                            Text="{Binding DisplayName}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
+
+        <ContentControl Grid.Column="1" prism:RegionManager.RegionName="ContentRegion" />
     </Grid>
 </Window>
