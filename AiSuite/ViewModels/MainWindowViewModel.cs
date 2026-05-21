@@ -19,6 +19,7 @@ public class MainWindowViewModel : BindableBase
     #endif
 
     private readonly AppVersionInfo appVersionInfo = new();
+    private IToolViewModel selectedTool;
 
     public MainWindowViewModel(IEnumerable<IToolViewModel> tools)
     {
@@ -29,6 +30,8 @@ public class MainWindowViewModel : BindableBase
     public string Title => appVersionInfo.Title;
 
     public ObservableCollection<IToolViewModel> Tools { get; }
+
+    public IToolViewModel SelectedTool { get => selectedTool; set => SetProperty(ref selectedTool, value); }
 
     [Conditional("DEBUG")]
     private void SetupDummyData()

@@ -5,13 +5,21 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:prism="http://prismlibrary.com/"
+    xmlns:tools="clr-namespace:AiSuite.Views.Tools"
     xmlns:viewModels="clr-namespace:AiSuite.ViewModels"
+    xmlns:viewModels1="clr-namespace:AiSuite.ViewModels.Tools"
     Title="{Binding Title}"
     Width="525"
     Height="350"
     d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
     prism:ViewModelLocator.AutoWireViewModel="True"
     mc:Ignorable="d">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type viewModels1:RectMeasureViewModel}">
+            <tools:RectMeasure />
+        </DataTemplate>
+    </Window.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200" />
@@ -23,7 +31,10 @@
             Background="{StaticResource MiddleBackgroundBrush}"
             BorderBrush="DarkGray"
             BorderThickness="0,0,1,0">
-            <ListBox BorderThickness="0" ItemsSource="{Binding Tools}">
+            <ListBox
+                BorderThickness="0"
+                ItemsSource="{Binding Tools}"
+                SelectedItem="{Binding SelectedTool}">
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type viewModels:IToolViewModel}">
                         <TextBlock
@@ -36,6 +47,6 @@
             </ListBox>
         </Border>
 
-        <ContentControl Grid.Column="1" prism:RegionManager.RegionName="ContentRegion" />
+        <ContentControl Grid.Column="1" Content="{Binding SelectedTool}" />
     </Grid>
 </Window>
