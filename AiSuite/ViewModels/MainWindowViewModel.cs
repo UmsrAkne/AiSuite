@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using AiSuite.Utils;
@@ -17,13 +19,19 @@ public class MainWindowViewModel : BindableBase
     #endif
 
     private readonly AppVersionInfo appVersionInfo = new();
+    private IToolViewModel selectedTool;
 
-    public MainWindowViewModel()
+    public MainWindowViewModel(IEnumerable<IToolViewModel> tools)
     {
+        Tools = new ObservableCollection<IToolViewModel>(tools);
         SetupDummyData();
     }
 
     public string Title => appVersionInfo.Title;
+
+    public ObservableCollection<IToolViewModel> Tools { get; }
+
+    public IToolViewModel SelectedTool { get => selectedTool; set => SetProperty(ref selectedTool, value); }
 
     [Conditional("DEBUG")]
     private void SetupDummyData()

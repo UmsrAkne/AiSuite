@@ -1,4 +1,6 @@
 ﻿using System.Windows;
+using AiSuite.ViewModels;
+using AiSuite.ViewModels.Tools;
 using AiSuite.Views;
 using Prism.Ioc;
 
@@ -16,6 +18,7 @@ namespace AiSuite
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
+            containerRegistry.Register<IToolViewModel, RectMeasureViewModel>();
         }
     }
 }
