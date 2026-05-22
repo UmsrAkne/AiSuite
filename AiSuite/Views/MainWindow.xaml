@@ -28,8 +28,10 @@
 
         <Border
             Grid.Column="0"
+            Margin="4"
             Background="{StaticResource MiddleBackgroundBrush}"
-            BorderThickness="0,0,1,0">
+            BorderThickness="0,0,1,0"
+            CornerRadius="5">
             <ListBox
                 BorderThickness="0"
                 ItemsSource="{Binding Tools}"
@@ -43,6 +45,12 @@
                             Text="{Binding DisplayName}" />
                     </DataTemplate>
                 </ListBox.ItemTemplate>
+
+                <ListBox.ItemContainerStyle>
+                    <Style BasedOn="{StaticResource {x:Type ListBoxItem}}" TargetType="ListBoxItem">
+                        <Setter Property="Margin" Value="4" />
+                    </Style>
+                </ListBox.ItemContainerStyle>
             </ListBox>
         </Border>
 
