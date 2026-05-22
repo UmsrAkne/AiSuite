@@ -9,7 +9,7 @@
     xmlns:tools="clr-namespace:AiSuite.ViewModels.Tools"
     d:DataContext="{d:DesignInstance tools:RectMeasureViewModel}"
     d:DesignHeight="300"
-    d:DesignWidth="300"
+    d:DesignWidth="800"
     mc:Ignorable="d">
 
     <UserControl.InputBindings>
@@ -19,7 +19,18 @@
             Modifiers="Ctrl" />
         <KeyBinding Key="Esc" Command="{Binding ResetSelectionCommand}" />
     </UserControl.InputBindings>
-    <Grid>
+    <Grid Background="{StaticResource DarkBackgroundBrush}">
+        <Grid.Resources>
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource CommonForegroundBrush}" />
+                <Setter Property="FontSize" Value="{StaticResource CommonFontSize}" />
+            </Style>
+
+            <Style BasedOn="{StaticResource {x:Type TextBox}}" TargetType="TextBox">
+                <Setter Property="Foreground" Value="{StaticResource CommonForegroundBrush}" />
+                <Setter Property="FontSize" Value="{StaticResource CommonFontSize}" />
+            </Style>
+        </Grid.Resources>
         <b:Interaction.Behaviors>
             <behaviors:ImageDropBehavior ImagePath="{Binding ImagePath}" />
         </b:Interaction.Behaviors>
@@ -45,43 +56,51 @@
                 Margin="0,0,10,0"
                 Command="{Binding ReloadCommand}"
                 Content="Reload" />
-            <Label VerticalAlignment="Center" Content="表示倍率:" />
+            <TextBlock
+                Margin="6,0"
+                Padding="0,1,0,0"
+                VerticalAlignment="Center"
+                Text="表示倍率:" />
             <ComboBox
                 Width="80"
                 ItemsSource="{Binding AvailableScales}"
                 SelectedItem="{Binding Scale}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding StringFormat={}{0:P0}}" />
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            FontSize="{StaticResource CommonFontSize}"
+                            Foreground="{StaticResource CommonForegroundBrush}"
+                            Text="{Binding StringFormat={}{0:P0}}" />
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
 
             <Separator Width="20" Background="Transparent" />
 
-            <Label VerticalAlignment="Center" Content="X:" />
-            <TextBox
-                Width="60"
-                VerticalAlignment="Center"
-                Text="{Binding ScreenX, StringFormat={}{0:F0}, UpdateSourceTrigger=PropertyChanged}" />
+            <StackPanel Orientation="Horizontal">
 
-            <Label VerticalAlignment="Center" Content="Y:" />
-            <TextBox
-                Width="60"
-                VerticalAlignment="Center"
-                Text="{Binding ScreenY, StringFormat={}{0:F0}, UpdateSourceTrigger=PropertyChanged}" />
+                <StackPanel.Resources>
+                    <Style BasedOn="{StaticResource {x:Type TextBox}}" TargetType="TextBox">
+                        <Setter Property="Margin" Value="4,0,20,0" />
+                        <Setter Property="Width" Value="60" />
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="TextAlignment" Value="Center" />
+                    </Style>
+                </StackPanel.Resources>
 
-            <Label VerticalAlignment="Center" Content="W:" />
-            <TextBox
-                Width="60"
-                VerticalAlignment="Center"
-                Text="{Binding ScreenWidth, StringFormat={}{0:F0}, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock VerticalAlignment="Center" Text="X:" />
+                <TextBox Text="{Binding ScreenX, StringFormat={}{0:F0}, UpdateSourceTrigger=PropertyChanged}" />
 
-            <Label VerticalAlignment="Center" Content="H:" />
-            <TextBox
-                Width="60"
-                VerticalAlignment="Center"
-                Text="{Binding ScreenHeight, StringFormat={}{0:F0}, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock VerticalAlignment="Center" Text="Y:" />
+                <TextBox Text="{Binding ScreenY, StringFormat={}{0:F0}, UpdateSourceTrigger=PropertyChanged}" />
+
+                <TextBlock VerticalAlignment="Center" Text="W:" />
+                <TextBox Text="{Binding ScreenWidth, StringFormat={}{0:F0}, UpdateSourceTrigger=PropertyChanged}" />
+
+                <TextBlock VerticalAlignment="Center" Text="H:" />
+                <TextBox Text="{Binding ScreenHeight, StringFormat={}{0:F0}, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
         </StackPanel>
 
         <ScrollViewer
@@ -143,14 +162,18 @@
             Grid.Row="1"
             Grid.Column="1"
             Margin="5"
+            FontSize="{StaticResource CommonFontSize}"
             Header="History">
             <ListBox ItemsSource="{Binding History}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Margin="0,2">
-                            <TextBlock FontSize="10" Text="{Binding Timestamp, StringFormat={}{0:HH:mm:ss}}" />
-                            <TextBlock FontWeight="Bold" Text="{Binding Description}" />
-                            <TextBlock FontSize="11" Text="{Binding Detail}" />
+                            <TextBlock FontSize="{StaticResource CommonFontSize}" Text="{Binding Timestamp, StringFormat={}{0:HH:mm:ss}}" />
+                            <TextBlock
+                                FontSize="{StaticResource CommonFontSize}"
+                                FontWeight="Bold"
+                                Text="{Binding Description}" />
+                            <TextBlock FontSize="{StaticResource CommonFontSize}" Text="{Binding Detail}" />
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
@@ -161,7 +184,8 @@
             Grid.Row="2"
             Grid.Column="0"
             Grid.ColumnSpan="2"
-            Padding="6,2">
+            Padding="6,2"
+            Background="{StaticResource MiddleBackgroundBrush}">
             <StatusBarItem>
                 <TextBlock Text="{Binding ImagePath}" />
             </StatusBarItem>

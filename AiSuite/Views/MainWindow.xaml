@@ -20,7 +20,7 @@
         </DataTemplate>
     </Window.Resources>
 
-    <Grid>
+    <Grid Background="{StaticResource DarkBackgroundBrush}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200" />
             <ColumnDefinition Width="*" />
@@ -29,7 +29,6 @@
         <Border
             Grid.Column="0"
             Background="{StaticResource MiddleBackgroundBrush}"
-            BorderBrush="DarkGray"
             BorderThickness="0,0,1,0">
             <ListBox
                 BorderThickness="0"
