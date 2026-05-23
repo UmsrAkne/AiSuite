@@ -1,7 +1,12 @@
-﻿namespace AiSuite.ViewModels.Tools
+﻿using System.Collections.ObjectModel;
+using Prism.Mvvm;
+
+namespace AiSuite.ViewModels.Tools
 {
-    public class PromptBatcherViewModel : IToolViewModel
+    public class PromptBatcherViewModel : BindableBase, IToolViewModel
     {
         public string DisplayName { get; } = "Prompt Batcher";
+
+        public ObservableCollection<string> ImagePaths { get; set; } = new();
     }
 }

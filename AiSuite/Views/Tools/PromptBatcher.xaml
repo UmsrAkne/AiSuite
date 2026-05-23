@@ -2,15 +2,22 @@
     x:Class="AiSuite.Views.Tools.PromptBatcher"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behaviors="clr-namespace:AiSuite.Behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:AiSuite.Views.Tools"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:tools="clr-namespace:AiSuite.ViewModels.Tools"
+    d:DataContext="{d:DesignInstance tools:PromptBatcherViewModel}"
     d:DesignHeight="300"
     d:DesignWidth="800"
     mc:Ignorable="d">
     <TabControl>
         <TabItem Header="File list">
-            <ListBox x:Name="ImageFileList" />
+            <ListBox x:Name="ImageFileList" ItemsSource="{Binding ImagePaths}">
+                <i:Interaction.Behaviors>
+                    <behaviors:ImageFilesDropBehavior ImagePaths="{Binding ImagePaths}" />
+                </i:Interaction.Behaviors>
+            </ListBox>
         </TabItem>
 
         <TabItem Header="Json editor">
