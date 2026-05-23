@@ -19,6 +19,10 @@
         <DataTemplate DataType="{x:Type viewModels1:RectMeasureViewModel}">
             <tools:RectMeasure />
         </DataTemplate>
+
+        <DataTemplate DataType="{x:Type viewModels1:PromptBatcherViewModel}">
+            <tools:PromptBatcher />
+        </DataTemplate>
     </Window.Resources>
 
     <Grid Background="{StaticResource DarkBackgroundBrush}">
