@@ -34,6 +34,7 @@
             BorderThickness="0,0,1,0"
             CornerRadius="5">
             <ListBox
+                x:Name="ToolListBox"
                 BorderThickness="0"
                 ItemsSource="{Binding Tools}"
                 SelectedItem="{Binding SelectedTool}">
@@ -72,6 +73,15 @@
                                             <ContentPresenter />
                                         </materialDesign:Ripple>
                                     </materialDesign:Card>
+
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="TemplateRoot" Property="Background" Value="{StaticResource SelectionBrush}" />
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="TemplateRoot" Property="Background" Value="{StaticResource HoverBrush}" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>
