@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Nodes;
+using SixLabors.ImageSharp;
 
 namespace AiSuite.Utils
 {
@@ -108,6 +109,23 @@ namespace AiSuite.Utils
             }
 
             return false;
+        }
+
+        public static string ExtractWorkflow(string pngPath)
+        {
+            using var image = Image.Load(pngPath);
+
+            var pngMeta = image.Metadata.GetPngMetadata();
+
+            foreach (var text in pngMeta.TextData)
+            {
+                if (text.Keyword == "workflow")
+                {
+                    return text.Value;
+                }
+            }
+
+            return null;
         }
     }
 }
