@@ -7,6 +7,7 @@ namespace AiSuite.ViewModels.Tools
     public class PromptBatcherViewModel : BindableBase, IToolViewModel
     {
         private string newNodeTitle = string.Empty;
+        private string jsonFilePath;
 
         public PromptBatcherViewModel()
         {
@@ -17,6 +18,12 @@ namespace AiSuite.ViewModels.Tools
         public string DisplayName { get; } = "Prompt Batcher";
 
         public ObservableCollection<string> ImagePaths { get; set; } = new ();
+
+        public string JsonFilePath
+        {
+            get => jsonFilePath;
+            set => SetProperty(ref jsonFilePath, value);
+        }
 
         public ObservableCollection<string> NodeTitles { get; set; } = new ()
         {
