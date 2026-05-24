@@ -11,6 +11,18 @@
     d:DesignHeight="300"
     d:DesignWidth="800"
     mc:Ignorable="d">
+    <UserControl.Resources>
+        <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource CommonForegroundBrush}" />
+            <Setter Property="FontSize" Value="{StaticResource CommonFontSize}" />
+        </Style>
+
+        <Style BasedOn="{StaticResource {x:Type TextBox}}" TargetType="TextBox">
+            <Setter Property="Foreground" Value="{StaticResource CommonForegroundBrush}" />
+            <Setter Property="FontSize" Value="{StaticResource CommonFontSize}" />
+        </Style>
+    </UserControl.Resources>
+
     <TabControl>
         <TabItem Header="File list">
             <ListBox x:Name="ImageFileList" ItemsSource="{Binding ImagePaths}">
@@ -21,16 +33,46 @@
         </TabItem>
 
         <TabItem Header="Json editor">
-            <Grid>
+            <Grid Margin="10">
                 <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
+                <StackPanel
+                    Grid.Row="0"
+                    Margin="0,0,0,10"
+                    Orientation="Horizontal">
+                    <TextBox Width="200" Text="{Binding NewNodeTitle, UpdateSourceTrigger=PropertyChanged}" />
+                    <Button
+                        Margin="5,0,0,0"
+                        Padding="10,0"
+                        Command="{Binding AddNodeTitleCommand}"
+                        Content="Add" />
+                </StackPanel>
+
+                <ListBox Grid.Row="1" ItemsSource="{Binding NodeTitles}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="{StaticResource CommonFontSize}"
+                                    Text="{Binding}" />
+                                <Button
+                                    Grid.Column="1"
+                                    Margin="10,0,0,0"
+                                    Command="{Binding DataContext.RemoveNodeTitleCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                    CommandParameter="{Binding}"
+                                    Content="Delete" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </Grid>
         </TabItem>
 
