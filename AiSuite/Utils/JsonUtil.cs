@@ -1,5 +1,10 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
+using MetadataExtractor;
+using MetadataExtractor.Formats.Png;
 using SixLabors.ImageSharp;
 
 namespace AiSuite.Utils
@@ -126,6 +131,56 @@ namespace AiSuite.Utils
             }
 
             return null;
+        }
+
+        public static string ExtractMetadataFromPng(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                Logger.Log("ファイルが見つかりません。");
+                return string.Empty;
+            }
+
+            try
+            {
+                // 画像からメタデータを読み込む
+                var directories = ImageMetadataReader.ReadMetadata(filePath);
+
+                // PNG のテキストチャンクが含まれるディレクトリを探す
+                var pngTextDirectories = directories.OfType<PngDirectory>();
+
+                foreach (var directory in pngTextDirectories)
+                {
+                    // PngDirectory.TagTextualData (通常はタグ番号 13) にテキストデータが入っている
+                    var textTags = directory.Tags
+                        .Where(tag => tag.Type == PngDirectory.TagTextualData);
+
+                    foreach (var tag in textTags)
+                    {
+                        // Description には "Keyword: Value" または "Keyword: Description" の形式で入る
+                        var description = tag.Description;
+
+                        // 今回探しているのは "prompt" というキーワード
+                        if (description != null
+                            && description.StartsWith("prompt:", StringComparison.OrdinalIgnoreCase))
+                        {
+                            // "prompt:" の後ろの部分（JSON文字列）を抽出
+                            var jsonPrompt = description.Substring("prompt:".Length).Trim();
+
+                            Logger.Log("--- 抽出されたプロンプト JSON ---");
+                            Logger.Log(jsonPrompt);
+                            return jsonPrompt;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log($"エラーが発生しました: {ex.Message}");
+            }
+
+            Logger.Log("prompt キーワードを含む tEXt チャンクが見つかりませんでした。");
+            return string.Empty;
         }
     }
 }
