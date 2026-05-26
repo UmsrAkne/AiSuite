@@ -5,6 +5,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:AiSuite.Views.Tools"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:tools="clr-namespace:AiSuite.ViewModels.Tools"
+    d:DataContext="{d:DesignInstance tools:ModelBrowserViewModel}"
     d:DesignHeight="300"
     d:DesignWidth="300"
     mc:Ignorable="d">
@@ -12,6 +14,7 @@
         <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{StaticResource CommonForegroundBrush}" />
             <Setter Property="FontSize" Value="{StaticResource CommonFontSize}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
 
         <Style BasedOn="{StaticResource {x:Type TextBox}}" TargetType="TextBox">
@@ -21,6 +24,18 @@
     </UserControl.Resources>
 
     <Grid>
-        <TextBlock Text="Model Browser" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0">
+            <TextBlock DockPanel.Dock="Left" Text="Model Directory Path: " />
+            <TextBox
+                Margin="15,0"
+                DockPanel.Dock="Right"
+                Text="{Binding ModelDirectoryPath}" />
+        </DockPanel>
+
     </Grid>
 </UserControl>
