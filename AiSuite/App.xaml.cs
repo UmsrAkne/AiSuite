@@ -20,6 +20,7 @@ namespace AiSuite
         {
             containerRegistry.Register<IToolViewModel, RectMeasureViewModel>();
             containerRegistry.Register<IToolViewModel, PromptBatcherViewModel>();
+            containerRegistry.Register<IToolViewModel, ModelBrowserViewModel>();
         }
     }
 }
