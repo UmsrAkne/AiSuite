@@ -48,6 +48,7 @@
 
         <ListBox
             Grid.Row="2"
+            HorizontalContentAlignment="Center"
             ItemsSource="{Binding Images}"
             ScrollViewer.IsDeferredScrollingEnabled="True"
             VirtualizingStackPanel.IsVirtualizing="True"
@@ -55,24 +56,30 @@
 
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid Columns="4" />
+                    <UniformGrid Columns="5" />
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
 
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type models:ModelFileItem}">
-                    <StackPanel Margin="5" Orientation="Horizontal">
+                    <StackPanel Margin="5">
                         <Border
-                            Width="150"
-                            Height="75"
+                            Width="120"
+                            Height="180"
                             Background="LightGray"
                             CornerRadius="4">
                             <Image Source="{Binding Thumbnail}" Stretch="UniformToFill" />
                         </Border>
+
                         <TextBlock
                             Margin="10,0,0,0"
                             VerticalAlignment="Center"
                             Text="{Binding FileName}" />
+
+                        <UniformGrid Margin="10" Columns="2">
+                            <Button Width="70" Content=".json" />
+                            <Button Margin="5,0,0,0" Content="metadata" />
+                        </UniformGrid>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
