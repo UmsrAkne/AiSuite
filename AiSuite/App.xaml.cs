@@ -19,6 +19,8 @@ namespace AiSuite
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.Register<IToolViewModel, RectMeasureViewModel>();
+            containerRegistry.Register<IToolViewModel, PromptBatcherViewModel>();
+            containerRegistry.Register<IToolViewModel, ModelBrowserViewModel>();
         }
     }
 }

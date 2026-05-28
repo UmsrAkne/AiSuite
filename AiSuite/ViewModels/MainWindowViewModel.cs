@@ -23,7 +23,9 @@ public class MainWindowViewModel : BindableBase
 
     public MainWindowViewModel(IEnumerable<IToolViewModel> tools)
     {
+        var settings = AppSettings.Load(AppSettings.SettingFilePath);
         Tools = new ObservableCollection<IToolViewModel>(tools);
+        SelectedTool = Tools.Count > 0 ? Tools[settings.InitialToolIndex] : null;
         SetupDummyData();
     }
 
