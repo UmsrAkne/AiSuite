@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using AiSuite.Models;
 using CommunityToolkit.Mvvm.Input;
@@ -75,8 +76,15 @@ namespace AiSuite.ViewModels.Tools
 
         private BitmapSource LoadThumbnail(string path, int decodeWidth)
         {
+            const int defaultHeight = 200;
+
             try
             {
+                if (!File.Exists(path))
+                {
+                    return CreateEmptyBitmap(decodeWidth, defaultHeight);
+                }
+
                 var bitmap = new BitmapImage();
                 bitmap.BeginInit();
                 bitmap.CacheOption = BitmapCacheOption.OnLoad; // ファイルロックを解除
@@ -89,8 +97,26 @@ namespace AiSuite.ViewModels.Tools
             }
             catch
             {
-                return null; // 壊れた画像などの対策
+                return CreateEmptyBitmap(decodeWidth, defaultHeight); // 壊れた画像などの対策
             }
+        }
+
+        private BitmapSource CreateEmptyBitmap(int width, int height)
+        {
+            var stride = width * 4;
+            var pixels = new byte[stride * height]; // 初期値はすべて 0 (透明)
+
+            var bitmap = BitmapSource.Create(
+                width,
+                height,
+                96,
+                96,
+                PixelFormats.Pbgra32,
+                null,
+                pixels,
+                stride);
+            bitmap.Freeze();
+            return bitmap;
         }
     }
 }
