@@ -30,6 +30,11 @@ namespace AiSuite.ViewModels.Tools
         public AsyncRelayCommand LoadImagesAsyncCommand =>
         loadImagesCommand ??= new AsyncRelayCommand(async () =>
         {
+            if (string.IsNullOrWhiteSpace(ModelDirectoryPath))
+            {
+                return;
+            }
+
             await LoadImagesAsync(ModelDirectoryPath);
         });
 
