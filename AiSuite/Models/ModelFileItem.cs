@@ -4,7 +4,7 @@ using Prism.Mvvm;
 
 namespace AiSuite.Models
 {
-    public class ImageItem : BindableBase
+    public class ModelFileItem : BindableBase
     {
         private BitmapSource thumbnail;
 

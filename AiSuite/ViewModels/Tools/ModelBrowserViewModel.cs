@@ -26,7 +26,7 @@ namespace AiSuite.ViewModels.Tools
             set => SetProperty(ref modelDirectoryPath, value);
         }
 
-        public ObservableCollection<ImageItem> Images { get; } = new ();
+        public ObservableCollection<ModelFileItem> Images { get; } = new ();
 
         public AsyncRelayCommand LoadImagesAsyncCommand =>
         loadImagesCommand ??= new AsyncRelayCommand(async () =>
@@ -43,24 +43,23 @@ namespace AiSuite.ViewModels.Tools
         {
             Images.Clear();
 
-            // 1. まずはファイルパスだけを超高速で取得してリストに並べる（画面には枠だけが出る）
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".bmp", ".gif", };
+            // .safetensors のファイルを全て取得する
+            var allowedExtensions = new[] { ".safetensors", };
             var files = Directory.EnumerateFiles(folderPath, "*.*", SearchOption.TopDirectoryOnly)
                 .Where(file => allowedExtensions.Contains(Path.GetExtension(file).ToLower()));
 
-            var items = files.Select(f => new ImageItem { FilePath = f, }).ToList();
+            var items = files.Select(f => new ModelFileItem { FilePath = f, }).ToList();
             foreach (var item in items)
             {
                 Images.Add(item);
             }
 
-            // 2. バックグラウンドで画像を1枚ずつ非同期ロード（順次画面に描画される）
-            // Task.Run でUIスレッドを絶対に止めない
+            // バックグラウンドで画像を1枚ずつ非同期ロード（順次画面に描画される）
             await Task.Run(async () =>
             {
                 foreach (var item in items)
                 {
-                    var bitmap = LoadThumbnail(item.FilePath, 150); // 横幅を縮小
+                    var bitmap = LoadThumbnail(GetPreviewImagePath(item.FilePath), 150); // 横幅を縮小
 
                     // UIスレッドに通知して反映
                     Application.Current.Dispatcher.Invoke(() =>
@@ -117,6 +116,19 @@ namespace AiSuite.ViewModels.Tools
                 stride);
             bitmap.Freeze();
             return bitmap;
+        }
+
+        /// <summary>
+        /// 入力されたファイルパスの拡張子部分を ".preview.png" に置き換えたパスを返す。
+        /// 主に ".safetensors" を対象に実行する。
+        /// </summary>
+        /// <param name="modelFilePath">処理対象のファイルパス。</param>
+        /// <returns>置き換え処理後のパス。</returns>
+        private string GetPreviewImagePath(string modelFilePath)
+        {
+            var pathWithoutExtension = Path.GetFileNameWithoutExtension(modelFilePath);
+            var baseDirectory = Path.GetDirectoryName(modelFilePath) ?? string.Empty;
+            return Path.Combine(baseDirectory, $"{pathWithoutExtension}.preview.png");
         }
     }
 }

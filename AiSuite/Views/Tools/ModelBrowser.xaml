@@ -60,7 +60,7 @@
             </ListBox.ItemsPanel>
 
             <ListBox.ItemTemplate>
-                <DataTemplate DataType="{x:Type models:ImageItem}">
+                <DataTemplate DataType="{x:Type models:ModelFileItem}">
                     <StackPanel Margin="5" Orientation="Horizontal">
                         <Border
                             Width="150"
