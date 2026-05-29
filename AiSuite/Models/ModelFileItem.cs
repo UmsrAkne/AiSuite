@@ -12,6 +12,8 @@ namespace AiSuite.Models
 
         public string FileName => Path.GetFileName(FilePath);
 
+        public string FIleNameWithExtension => Path.GetFileNameWithoutExtension(FilePath);
+
         public BitmapSource Thumbnail { get => thumbnail; set => SetProperty(ref thumbnail, value); }
     }
 }
