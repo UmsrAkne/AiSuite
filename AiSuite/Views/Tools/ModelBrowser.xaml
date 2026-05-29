@@ -86,11 +86,15 @@
                         <TextBlock
                             Margin="10,0,0,0"
                             VerticalAlignment="Center"
-                            Text="{Binding FIleNameWithExtension}" />
+                            Text="{Binding FileNameWithExtension}" />
 
                         <UniformGrid Margin="10" Columns="2">
                             <Button Width="70" Content=".json" />
-                            <Button Margin="5,0,0,0" Content="metadata" />
+                            <Button
+                                Margin="5,0,0,0"
+                                Command="{Binding DataContext.OpenCivitaiInfoCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                CommandParameter="{Binding}"
+                                Content="metadata" />
                         </UniformGrid>
                     </StackPanel>
                 </DataTemplate>

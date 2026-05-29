@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace AiSuite.ViewModels.Tools
     {
         private string modelDirectoryPath;
         private AsyncRelayCommand loadImagesCommand;
+        private AsyncRelayCommand<ModelFileItem> openCivitaiInfoCommand;
 
         public string DisplayName { get; } = "Model Browser";
 
@@ -38,6 +40,27 @@ namespace AiSuite.ViewModels.Tools
 
             await LoadImagesAsync(ModelDirectoryPath);
         });
+
+        public AsyncRelayCommand<ModelFileItem> OpenCivitaiInfoCommand =>
+            openCivitaiInfoCommand ??= new AsyncRelayCommand<ModelFileItem>(async (item) =>
+            {
+                if (item == null || string.IsNullOrEmpty(item.CivitaiInfoPath))
+                {
+                    return;
+                }
+
+                if (File.Exists(item.CivitaiInfoPath))
+                {
+                    await Task.Run(() =>
+                    {
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = item.CivitaiInfoPath,
+                            UseShellExecute = true,
+                        });
+                    });
+                }
+            });
 
         private async Task LoadImagesAsync(string folderPath)
         {
