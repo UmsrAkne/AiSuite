@@ -92,7 +92,7 @@
                             <Button Width="70" Content=".json" />
                             <Button
                                 Margin="5,0,0,0"
-                                Command="{Binding DataContext.OpenCivitaiInfoCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                Command="{Binding OpenCivitaiInfoCommand}"
                                 CommandParameter="{Binding}"
                                 Content="metadata" />
                         </UniformGrid>
