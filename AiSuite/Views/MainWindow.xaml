@@ -10,8 +10,8 @@
     xmlns:viewModels="clr-namespace:AiSuite.ViewModels"
     xmlns:viewModels1="clr-namespace:AiSuite.ViewModels.Tools"
     Title="{Binding Title}"
-    Width="525"
-    Height="350"
+    Width="1280"
+    Height="720"
     d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
     prism:ViewModelLocator.AutoWireViewModel="True"
     mc:Ignorable="d">
