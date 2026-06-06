@@ -36,6 +36,7 @@ public class RectMeasureViewModel : BindableBase, IToolViewModel
         ResetSelectionCommand = new DelegateCommand(ResetSelection);
         ReloadCommand = new DelegateCommand(ReloadImage);
         ConfirmSelectionCommand = new DelegateCommand(ConfirmSelection);
+        SelectAllCommand = new DelegateCommand(SelectAll);
         SetupDummyData();
     }
 
@@ -46,6 +47,8 @@ public class RectMeasureViewModel : BindableBase, IToolViewModel
     public DelegateCommand ReloadCommand { get; }
 
     public DelegateCommand ConfirmSelectionCommand { get; }
+
+    public DelegateCommand SelectAllCommand { get; }
 
     public ObservableCollection<HistoryItem> History { get; } = new();
 
@@ -210,6 +213,19 @@ public class RectMeasureViewModel : BindableBase, IToolViewModel
     {
         History.Insert(0, new HistoryItem { Type = type, Description = description, Detail = detail });
         Logger.Log($"History Added: {description} - {detail}");
+    }
+
+    private void SelectAll()
+    {
+        if (PixelWidth == 0 || PixelHeight == 0)
+        {
+            return;
+        }
+
+        ScreenX = 0;
+        ScreenY = 0;
+        ScreenWidth = PixelWidth;
+        ScreenHeight = PixelHeight;
     }
 
     private void UpdateImageSize(string? path)

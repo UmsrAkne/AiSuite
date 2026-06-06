@@ -17,6 +17,11 @@
             Key="C"
             Command="{Binding CopyCommand}"
             Modifiers="Ctrl" />
+
+        <KeyBinding
+            Key="A"
+            Command="{Binding SelectAllCommand}"
+            Modifiers="Ctrl" />
         <KeyBinding Key="Esc" Command="{Binding ResetSelectionCommand}" />
     </UserControl.InputBindings>
     <Grid Background="{StaticResource DarkBackgroundBrush}">
