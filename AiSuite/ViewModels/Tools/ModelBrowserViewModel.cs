@@ -61,6 +61,9 @@ namespace AiSuite.ViewModels.Tools
                 {
                     var bitmap = LoadThumbnail(item.GetPreviewImagePath(), 150); // 横幅を縮小
 
+                    var metadata = Utils.ModelMetadataParser.ParseJsonFile(item.CivitaiInfoPath);
+                    item.ModelMetadataDto = metadata;
+
                     // UIスレッドに通知して反映
                     Application.Current.Dispatcher.Invoke(() =>
                     {

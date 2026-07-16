@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using AiSuite.Models.DTOs;
 using CommunityToolkit.Mvvm.Input;
 using Prism.Mvvm;
 
@@ -48,6 +49,8 @@ namespace AiSuite.Models
         public string CivitaiInfoPath { get; set; } = string.Empty;
 
         public AsyncRelayCommand OpenCivitaiInfoCommand { get; set; }
+
+        public ModelMetadataDto ModelMetadataDto { get; set; }
 
         /// <summary>
         /// 入力されたファイルパスの拡張子部分を存在する画像ファイルの拡張子に置き換えたパスを返す。
