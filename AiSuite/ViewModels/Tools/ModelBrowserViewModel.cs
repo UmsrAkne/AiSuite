@@ -119,7 +119,7 @@ namespace AiSuite.ViewModels.Tools
         }
 
         /// <summary>
-        /// 入力されたファイルパスの拡張子部分を ".preview.png" に置き換えたパスを返す。
+        /// 入力されたファイルパスの拡張子部分を存在する画像ファイルの拡張子に置き換えたパスを返す。
         /// 主に ".safetensors" を対象に実行する。
         /// </summary>
         /// <param name="modelFilePath">処理対象のファイルパス。</param>
@@ -128,6 +128,22 @@ namespace AiSuite.ViewModels.Tools
         {
             var pathWithoutExtension = Path.GetFileNameWithoutExtension(modelFilePath);
             var baseDirectory = Path.GetDirectoryName(modelFilePath) ?? string.Empty;
+
+            var png = Path.Combine(baseDirectory, $"{pathWithoutExtension}.preview.png").ToLower();
+            var jpg = Path.Combine(baseDirectory, $"{pathWithoutExtension}.preview.jpg").ToLower();
+            var jpeg = Path.Combine(baseDirectory, $"{pathWithoutExtension}.preview.jpeg").ToLower();
+            var gif = Path.Combine(baseDirectory, $"{pathWithoutExtension}.preview.gif").ToLower();
+
+            foreach (var imageFileName in new[] { png, jpg, jpeg, gif, })
+            {
+                var p = Path.Combine(baseDirectory, imageFileName);
+                if (File.Exists(p))
+                {
+                    return p;
+                }
+            }
+
+            // 全部見つからなかった場合はフォールバックで png を返す。
             return Path.Combine(baseDirectory, $"{pathWithoutExtension}.preview.png");
         }
     }
