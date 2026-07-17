@@ -18,9 +18,7 @@ namespace AiSuite.Databases
             ModelName = modelFileItem.ModelMetadataDto.Model.Name;
             Description = modelFileItem.ModelMetadataDto.Model.Description;
             LastUpdatedAt = File.Exists(ModelFilePath) ? File.GetLastWriteTime(ModelFilePath) : DateTime.UtcNow;
-
-            // サムネイルの登録のは後ほどやる。
-            // ThumbnailPath = modelFileItem.
+            ThumbnailPath = modelFileItem.ThumbnailCachePath;
         }
 
         [Key]

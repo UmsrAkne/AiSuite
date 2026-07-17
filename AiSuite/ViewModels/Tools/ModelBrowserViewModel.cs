@@ -117,6 +117,7 @@ namespace AiSuite.ViewModels.Tools
                             var fileName = $"{Guid.NewGuid()}.png";
                             var savePath = Path.Combine(thumbnailCacheDir, fileName);
                             SaveBitmapSourceAsPng(bitmap, savePath);
+                            item.ThumbnailCachePath = savePath;
 
                             // DBを更新
                             if (loraModel != null)
