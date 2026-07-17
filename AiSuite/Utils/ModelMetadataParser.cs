@@ -31,5 +31,25 @@ namespace AiSuite.Utils
                 return null;
             }
         }
+
+        public static CivitaiHelperInfoDto ParseCivitaiHelperJsonFile(string jsonFilePath)
+        {
+            try
+            {
+                if (!File.Exists(jsonFilePath))
+                {
+                    return null; // ファイルがないので中断。
+                }
+
+                var jsonString = File.ReadAllText(jsonFilePath);
+                return JsonSerializer.Deserialize<CivitaiHelperInfoDto>(jsonString, Options);
+            }
+            catch (Exception ex)
+            {
+                // ログ
+                System.Diagnostics.Debug.WriteLine($"Jsonパース失敗: {ex.Message}");
+                return null;
+            }
+        }
     }
 }
