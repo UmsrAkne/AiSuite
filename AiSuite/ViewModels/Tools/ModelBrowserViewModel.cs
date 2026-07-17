@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using AiSuite.Databases;
 using AiSuite.Models;
+using AiSuite.Models.DTOs;
 using CommunityToolkit.Mvvm.Input;
 using Prism.Mvvm;
 
@@ -132,10 +133,10 @@ namespace AiSuite.ViewModels.Tools
                         }
                     }
 
-                    var metadata = Utils.ModelMetadataParser.ParseJsonFile(item.CivitaiInfoPath);
+                    var metadata = Utils.ModelMetadataParser.ParseJsonFile<ModelMetadataDto>(item.CivitaiInfoPath);
                     item.ModelMetadataDto = metadata;
 
-                    var helperInfoMetadata = Utils.ModelMetadataParser.ParseCivitaiHelperJsonFile(item.CivitaiHelperInfoPath);
+                    var helperInfoMetadata = Utils.ModelMetadataParser.ParseJsonFile<CivitaiHelperInfoDto>(item.CivitaiHelperInfoPath);
                     item.CivitaiHelperInfoDto = helperInfoMetadata;
 
                     // UIスレッドに通知して反映
