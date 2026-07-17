@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using AiSuite.Databases;
 using AiSuite.Models;
 using CommunityToolkit.Mvvm.Input;
 using Prism.Mvvm;
@@ -15,8 +16,14 @@ namespace AiSuite.ViewModels.Tools
     // ReSharper disable once ClassNeverInstantiated.Global
     public class ModelBrowserViewModel : BindableBase, IToolViewModel
     {
+        private readonly MyDbContext dbContext;
         private string modelDirectoryPath;
         private AsyncRelayCommand loadImagesCommand;
+
+        public ModelBrowserViewModel(MyDbContext dbContext)
+        {
+            this.dbContext = dbContext;
+        }
 
         public string DisplayName { get; } = "Model Browser";
 
