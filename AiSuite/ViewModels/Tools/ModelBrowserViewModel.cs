@@ -17,12 +17,18 @@ namespace AiSuite.ViewModels.Tools
     public class ModelBrowserViewModel : BindableBase, IToolViewModel
     {
         private readonly MyDbContext dbContext;
+        private readonly string thumbnailCacheDir;
         private string modelDirectoryPath;
         private AsyncRelayCommand loadImagesCommand;
 
         public ModelBrowserViewModel(MyDbContext dbContext)
         {
             this.dbContext = dbContext;
+            thumbnailCacheDir = Path.Combine(AppContext.BaseDirectory, "Thumbnails");
+            if (!Directory.Exists(thumbnailCacheDir))
+            {
+                Directory.CreateDirectory(thumbnailCacheDir);
+            }
         }
 
         public string DisplayName { get; } = "Model Browser";
@@ -67,7 +73,41 @@ namespace AiSuite.ViewModels.Tools
             {
                 foreach (var item in items)
                 {
-                    var bitmap = LoadThumbnail(item.GetPreviewImagePath(), 150); // 横幅を縮小
+                    // DBから既存のキャッシュパスがあるか確認
+                    var loraModel = dbContext.LoraModels.FirstOrDefault(m => m.ModelFilePath == item.FilePath);
+                    var cachePath = loraModel?.ThumbnailPath;
+
+                    BitmapSource bitmap;
+                    if (!string.IsNullOrEmpty(cachePath) && File.Exists(cachePath))
+                    {
+                        // キャッシュがあればキャッシュからロード
+                        bitmap = LoadThumbnail(cachePath, 150);
+                    }
+                    else
+                    {
+                        // キャッシュがない場合、元の画像から作成
+                        var previewPath = item.GetPreviewImagePath();
+                        if (File.Exists(previewPath))
+                        {
+                            bitmap = LoadThumbnail(previewPath, 150);
+                            
+                            // 作成したサムネイルを保存
+                            var fileName = $"{Guid.NewGuid()}.png";
+                            var savePath = Path.Combine(thumbnailCacheDir, fileName);
+                            SaveBitmapSourceAsPng(bitmap, savePath);
+
+                            // DBを更新
+                            if (loraModel != null)
+                            {
+                                loraModel.ThumbnailPath = savePath;
+                                await dbContext.SaveChangesAsync();
+                            }
+                        }
+                        else
+                        {
+                            bitmap = CreateEmptyBitmap(150, 200);
+                        }
+                    }
 
                     var metadata = Utils.ModelMetadataParser.ParseJsonFile(item.CivitaiInfoPath);
                     item.ModelMetadataDto = metadata;
@@ -79,7 +119,7 @@ namespace AiSuite.ViewModels.Tools
                     });
 
                     // 必要に応じてわずかなウェイトを入れるとUIがより滑らかになります
-                    await Task.Delay(1);
+                    await Task.Delay(1).ConfigureAwait(false);
                 }
             });
         }
@@ -127,6 +167,14 @@ namespace AiSuite.ViewModels.Tools
                 stride);
             bitmap.Freeze();
             return bitmap;
+        }
+
+        private void SaveBitmapSourceAsPng(BitmapSource bitmapSource, string path)
+        {
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+            using var stream = File.Create(path);
+            encoder.Save(stream);
         }
     }
 }
