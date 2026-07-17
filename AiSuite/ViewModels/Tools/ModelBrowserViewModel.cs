@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using AiSuite.Databases;
 using AiSuite.Models;
 using CommunityToolkit.Mvvm.Input;
 using Prism.Mvvm;
@@ -15,10 +18,29 @@ namespace AiSuite.ViewModels.Tools
     // ReSharper disable once ClassNeverInstantiated.Global
     public class ModelBrowserViewModel : BindableBase, IToolViewModel
     {
+        private readonly MyDbContext dbContext;
+        private readonly string thumbnailCacheDir;
         private string modelDirectoryPath;
         private AsyncRelayCommand loadImagesCommand;
+        private AsyncRelayCommand searchModelCommand;
+        private string searchText;
+
+        public ModelBrowserViewModel(MyDbContext dbContext)
+        {
+            this.dbContext = dbContext;
+            thumbnailCacheDir = Path.Combine(AppContext.BaseDirectory, "Thumbnails");
+            if (!Directory.Exists(thumbnailCacheDir))
+            {
+                Directory.CreateDirectory(thumbnailCacheDir);
+            }
+
+            Images = new ObservableCollection<ModelFileItem>();
+            ModelFileItemView = CollectionViewSource.GetDefaultView(Images);
+        }
 
         public string DisplayName { get; } = "Model Browser";
+
+        public string SearchText { get => searchText; set => SetProperty(ref searchText, value); }
 
         public string ModelDirectoryPath
         {
@@ -26,7 +48,20 @@ namespace AiSuite.ViewModels.Tools
             set => SetProperty(ref modelDirectoryPath, value);
         }
 
-        public ObservableCollection<ModelFileItem> Images { get; } = new ();
+        public ObservableCollection<ModelFileItem> Images { get; }
+
+        public ICollectionView ModelFileItemView { get; set; }
+
+        public AsyncRelayCommand SearchModelAsyncCommand =>
+            searchModelCommand ??= new AsyncRelayCommand(async () =>
+            {
+                if (Images.Count == 0)
+                {
+                    return;
+                }
+
+                await Application.Current.Dispatcher.InvokeAsync(() => Search(searchText));
+            });
 
         public AsyncRelayCommand LoadImagesAsyncCommand =>
         loadImagesCommand ??= new AsyncRelayCommand(async () =>
@@ -37,6 +72,7 @@ namespace AiSuite.ViewModels.Tools
             }
 
             await LoadImagesAsync(ModelDirectoryPath);
+            await dbContext.AddRangeAsync(Images);
         });
 
         private async Task LoadImagesAsync(string folderPath)
@@ -59,7 +95,44 @@ namespace AiSuite.ViewModels.Tools
             {
                 foreach (var item in items)
                 {
-                    var bitmap = LoadThumbnail(GetPreviewImagePath(item.FilePath), 150); // 横幅を縮小
+                    // DBから既存のキャッシュパスがあるか確認
+                    var loraModel = dbContext.LoraModels.FirstOrDefault(m => m.ModelFilePath == item.FilePath);
+                    var cachePath = loraModel?.ThumbnailPath;
+
+                    BitmapSource bitmap;
+                    if (!string.IsNullOrEmpty(cachePath) && File.Exists(cachePath))
+                    {
+                        // キャッシュがあればキャッシュからロード
+                        bitmap = LoadThumbnail(cachePath, 150);
+                    }
+                    else
+                    {
+                        // キャッシュがない場合、元の画像から作成
+                        var previewPath = item.GetPreviewImagePath();
+                        if (File.Exists(previewPath))
+                        {
+                            bitmap = LoadThumbnail(previewPath, 150);
+                            
+                            // 作成したサムネイルを保存
+                            var fileName = $"{Guid.NewGuid()}.png";
+                            var savePath = Path.Combine(thumbnailCacheDir, fileName);
+                            SaveBitmapSourceAsPng(bitmap, savePath);
+
+                            // DBを更新
+                            if (loraModel != null)
+                            {
+                                loraModel.ThumbnailPath = savePath;
+                                await dbContext.SaveChangesAsync();
+                            }
+                        }
+                        else
+                        {
+                            bitmap = CreateEmptyBitmap(150, 200);
+                        }
+                    }
+
+                    var metadata = Utils.ModelMetadataParser.ParseJsonFile(item.CivitaiInfoPath);
+                    item.ModelMetadataDto = metadata;
 
                     // UIスレッドに通知して反映
                     Application.Current.Dispatcher.Invoke(() =>
@@ -68,7 +141,7 @@ namespace AiSuite.ViewModels.Tools
                     });
 
                     // 必要に応じてわずかなウェイトを入れるとUIがより滑らかになります
-                    await Task.Delay(1);
+                    await Task.Delay(1).ConfigureAwait(false);
                 }
             });
         }
@@ -118,17 +191,31 @@ namespace AiSuite.ViewModels.Tools
             return bitmap;
         }
 
-        /// <summary>
-        /// 入力されたファイルパスの拡張子部分を ".preview.png" に置き換えたパスを返す。
-        /// 主に ".safetensors" を対象に実行する。
-        /// </summary>
-        /// <param name="modelFilePath">処理対象のファイルパス。</param>
-        /// <returns>置き換え処理後のパス。</returns>
-        private string GetPreviewImagePath(string modelFilePath)
+        private void SaveBitmapSourceAsPng(BitmapSource bitmapSource, string path)
         {
-            var pathWithoutExtension = Path.GetFileNameWithoutExtension(modelFilePath);
-            var baseDirectory = Path.GetDirectoryName(modelFilePath) ?? string.Empty;
-            return Path.Combine(baseDirectory, $"{pathWithoutExtension}.preview.png");
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+            using var stream = File.Create(path);
+            encoder.Save(stream);
+        }
+
+        private void Search(string keyword)
+        {
+            if (string.IsNullOrWhiteSpace(keyword))
+            {
+                ModelFileItemView.Filter = null;
+            }
+            else
+            {
+                // ヒットしたやつだけ表示するようにフィルタ
+                ModelFileItemView.Filter = (obj) =>
+                {
+                    var data = obj as ModelFileItem;
+                    return data != null
+                           && (data.ModelMetadataDto.Model.Name.Contains(keyword)
+                               || data.ModelMetadataDto.Model.Description.Contains(keyword));
+                };
+            }
         }
     }
 }
