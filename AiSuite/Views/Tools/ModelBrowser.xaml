@@ -26,6 +26,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
 
@@ -58,8 +59,45 @@
 
         </Grid>
 
+        <Grid Grid.Row="1" Margin="0,4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock
+                Grid.Column="0"
+                DockPanel.Dock="Left"
+                Text="Search Models" />
+
+            <TextBox
+                Grid.Column="1"
+                Margin="15,0"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"
+                Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
+                <TextBox.InputBindings>
+                    <KeyBinding
+                        Key="Enter"
+                        Command="{Binding SearchModelAsyncCommand}"
+                        Modifiers="Control" />
+                </TextBox.InputBindings>
+            </TextBox>
+
+            <Button
+                Grid.Column="2"
+                Width="200"
+                Margin="10,0"
+                HorizontalAlignment="Right"
+                Command="{Binding SearchModelAsyncCommand}"
+                Content="Search (Ctr + Enter)" />
+
+        </Grid>
+
+
         <ListBox
-            Grid.Row="1"
+            Grid.Row="2"
             HorizontalContentAlignment="Center"
             ItemsSource="{Binding Images}"
             ScrollViewer.IsDeferredScrollingEnabled="True"

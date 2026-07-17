@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using AiSuite.Databases;
@@ -20,6 +22,8 @@ namespace AiSuite.ViewModels.Tools
         private readonly string thumbnailCacheDir;
         private string modelDirectoryPath;
         private AsyncRelayCommand loadImagesCommand;
+        private AsyncRelayCommand searchModelCommand;
+        private string searchText;
 
         public ModelBrowserViewModel(MyDbContext dbContext)
         {
@@ -29,9 +33,14 @@ namespace AiSuite.ViewModels.Tools
             {
                 Directory.CreateDirectory(thumbnailCacheDir);
             }
+
+            Images = new ObservableCollection<ModelFileItem>();
+            ModelFileItemView = CollectionViewSource.GetDefaultView(Images);
         }
 
         public string DisplayName { get; } = "Model Browser";
+
+        public string SearchText { get => searchText; set => SetProperty(ref searchText, value); }
 
         public string ModelDirectoryPath
         {
@@ -39,7 +48,20 @@ namespace AiSuite.ViewModels.Tools
             set => SetProperty(ref modelDirectoryPath, value);
         }
 
-        public ObservableCollection<ModelFileItem> Images { get; } = new ();
+        public ObservableCollection<ModelFileItem> Images { get; }
+
+        public ICollectionView ModelFileItemView { get; set; }
+
+        public AsyncRelayCommand SearchModelAsyncCommand =>
+            searchModelCommand ??= new AsyncRelayCommand(async () =>
+            {
+                if (Images.Count == 0)
+                {
+                    return;
+                }
+
+                await Application.Current.Dispatcher.InvokeAsync(() => Search(searchText));
+            });
 
         public AsyncRelayCommand LoadImagesAsyncCommand =>
         loadImagesCommand ??= new AsyncRelayCommand(async () =>
@@ -175,6 +197,25 @@ namespace AiSuite.ViewModels.Tools
             encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
             using var stream = File.Create(path);
             encoder.Save(stream);
+        }
+
+        private void Search(string keyword)
+        {
+            if (string.IsNullOrWhiteSpace(keyword))
+            {
+                ModelFileItemView.Filter = null;
+            }
+            else
+            {
+                // ヒットしたやつだけ表示するようにフィルタ
+                ModelFileItemView.Filter = (obj) =>
+                {
+                    var data = obj as ModelFileItem;
+                    return data != null
+                           && (data.ModelMetadataDto.Model.Name.Contains(keyword)
+                               || data.ModelMetadataDto.Model.Description.Contains(keyword));
+                };
+            }
         }
     }
 }
