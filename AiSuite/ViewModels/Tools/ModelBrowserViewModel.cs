@@ -44,6 +44,7 @@ namespace AiSuite.ViewModels.Tools
             }
 
             await LoadImagesAsync(ModelDirectoryPath);
+            await dbContext.AddRangeAsync(Images);
         });
 
         private async Task LoadImagesAsync(string folderPath)
