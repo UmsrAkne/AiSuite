@@ -12,23 +12,22 @@ namespace AiSuite.Utils
             PropertyNameCaseInsensitive = true,
         };
 
-        public static ModelMetadataDto ParseJsonFile(string jsonFilePath)
+        public static T ParseJsonFile<T>(string jsonFilePath)
         {
             try
             {
                 if (!File.Exists(jsonFilePath))
                 {
-                    return null; // ファイルがないので中断。
+                    return default;
                 }
 
                 var jsonString = File.ReadAllText(jsonFilePath);
-                return JsonSerializer.Deserialize<ModelMetadataDto>(jsonString, Options);
+                return JsonSerializer.Deserialize<T>(jsonString, Options);
             }
             catch (Exception ex)
             {
-                // ログ
                 System.Diagnostics.Debug.WriteLine($"Jsonパース失敗: {ex.Message}");
-                return null;
+                return default;
             }
         }
     }

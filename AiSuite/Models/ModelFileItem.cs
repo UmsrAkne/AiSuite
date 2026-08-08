@@ -37,6 +37,12 @@ namespace AiSuite.Models
                 {
                     CivitaiInfoPath = path;
                 }
+
+                var jsonFilePath = Path.Combine(dir, $"{FileNameWithExtension}.json");
+                if (File.Exists(jsonFilePath))
+                {
+                    CivitaiHelperInfoPath = jsonFilePath;
+                }
             }
         }
 
@@ -46,11 +52,17 @@ namespace AiSuite.Models
 
         public BitmapSource Thumbnail { get => thumbnail; set => SetProperty(ref thumbnail, value); }
 
+        public string ThumbnailCachePath { get; set; }
+
         public string CivitaiInfoPath { get; set; } = string.Empty;
+
+        public string CivitaiHelperInfoPath { get; set; } = string.Empty;
 
         public AsyncRelayCommand OpenCivitaiInfoCommand { get; set; }
 
         public ModelMetadataDto ModelMetadataDto { get; set; }
+
+        public CivitaiHelperInfoDto CivitaiHelperInfoDto { get; set; }
 
         /// <summary>
         /// 入力されたファイルパスの拡張子部分を存在する画像ファイルの拡張子に置き換えたパスを返す。
