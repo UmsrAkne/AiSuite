@@ -27,6 +27,10 @@
         <DataTemplate DataType="{x:Type viewModels1:ModelBrowserViewModel}">
             <tools:ModelBrowser />
         </DataTemplate>
+
+        <DataTemplate DataType="{x:Type viewModels1:ImageCutOutViewModel}">
+            <tools:ImageCutOut />
+        </DataTemplate>
     </Window.Resources>
 
     <Grid Background="{StaticResource DarkBackgroundBrush}">
